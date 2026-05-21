@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  db:
+    image: mariadb:10.11
+    container_name: m-corner-db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root_secure_password
+      MYSQL_DATABASE: m_corner_db
+      MYSQL_USER: m_corner_worker
+      MYSQL_PASSWORD: worker_secure_password
+    volumes:
+      - mariadb_data:/var/lib/mysql
+
+  wordpress:
+    image: wordpress:6.4-php8.1-fpm-alpine
+    container_name: m-corner-wp
+    restart: always
+    ports:
+      - "8080:80"
+    environment:
+      WORDPRESS_DB_HOST: db:3306
+      WORDPRESS_DB_USER: m_corner_worker
+      WORDPRESS_DB_PASSWORD: worker_secure_password
+      WORDPRESS_DB_NAME: m_corner_db
+    volumes:
+      - ./wp-content:/var/www/html/wp-content
+
+  adminer:
+    image: adminer:latest
+    container_name: m-corner-adminer
+    restart: always
+    ports:
+      - "8081:80"
+
+volumes:
+  mariadb_data:

@@ -1,0 +1,14 @@
+.DS_Store
+Thumbs.db
+*.log
+*.sql
+*.zip
+
+wp-content/plugins/akismet/
+wp-content/plugins/hello.php
+wp-content/themes/twentytwenty*
+
+wp-content/uploads/
+
+!wp-content/plugins/elementor/
+!wp-content/themes/hello-elementor/
