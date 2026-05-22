@@ -12,6 +12,7 @@ services:
       MYSQL_PASSWORD: worker_secure_password
     volumes:
       - mariadb_data:/var/lib/mysql
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
 
   wordpress:
     image: wordpress:6.4-php8.1-fpm-alpine
