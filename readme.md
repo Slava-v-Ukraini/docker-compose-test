@@ -72,11 +72,15 @@ docker-compose up -d
 
 <li>Вкажи свій Gemini API Key та Application Password від WordPress.</li>
 </ul>
+
 ### 4. Налаштування теми WordPress
-<ol>
+<ul>
 <li>Перенеси папку wp-content/themes/m-corner-core у свій локальний WordPress.</li>
 
 <li>Активуй кастомну тему в адмінці.</li>
-</ol>
+</ul>
+
+---
+
 📝 Ліцензія
 Проект створено в навчальних та комерційних цілях для демонстрації навичок побудови Fullstack / DevOps автоматизацій.
