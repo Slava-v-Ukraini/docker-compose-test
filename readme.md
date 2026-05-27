@@ -13,7 +13,7 @@
 
 Конвеєр побудований на базі **n8n** у локальній інфраструктурі **Docker**. Вся логіка працює лінійно без зайвого навантаження на систему завдяки розумному мапінгу потоків даних:
 
-![Візуальна схема воркфлоу n8n](https://raw.githubusercontent.com/Slava-v-Ukraini/docker-compose-test/master/n8n-workflows/wp-ai-news.json)
+![Візуальна схема воркфлоу n8n](https://raw.githubusercontent.com/Slava-v-Ukraini/docker-compose-test/master/n8n-workflows/workflow_scheme.png)
 
 ## 🔥 Ключові фічі (Key Features)
 
