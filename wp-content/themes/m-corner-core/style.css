@@ -1,0 +1,235 @@
+/*
+Theme Name: M-Corner Core AI Media
+Theme URI: https://m-corner.local
+Description: Кастомна незалежна тема з нуля для автоматизованого AI новинного порталу M-Corner.
+Version: 1.1.0
+Author: DevOps Engineer
+Author URI: https://m-corner.local
+License: GNU General Public License v2 or later
+Text Domain: m-corner-core
+*/
+
+/* Глобальні налаштування */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    background-color: #0d0e12; /* Глибокий темний космос */
+    color: #e4e6eb;
+}
+
+/* Контейнер для всієї сітки новин */
+.ai-news-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 30px;
+    padding: 20px 0;
+}
+
+/* Картка новини */
+.news-card {
+    background: #16171d; /* Полегшений темний для карток */
+    border: 1px solid #242631;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: column;
+    transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+    position: relative;
+}
+
+/* Контейнер для картинки (щоб зум не виходив за межі) */
+.news-card-image-wrapper {
+    overflow: hidden;
+    position: relative;
+    height: 220px;
+}
+
+/* Сама картинка */
+.news-card-image {
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+    transition: transform 0.5s ease;
+}
+
+/* Ефекти при наведенні на КАРТКУ */
+.news-card:hover {
+    transform: translateY(-8px);
+    border-color: #ff2a74; /* Неоново-рожева рамка при наведенні */
+    box-shadow: 0 12px 30px rgba(255, 42, 116, 0.15);
+}
+
+/* Зум картинки при наведенні на картку */
+.news-card:hover .news-card-image {
+    transform: scale(1.08);
+}
+
+/* Контентна частина картки */
+.news-card-content {
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+/* Категорія / Тег */
+.news-card-tag {
+    color: #ff2a74;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 12px;
+    display: inline-block;
+}
+
+/* Заголовок новини */
+.news-card-title {
+    margin: 0 0 10px 0;
+    font-size: 1.3rem;
+    line-height: 1.4;
+    font-weight: 600;
+}
+
+.news-card-title a {
+    text-decoration: none;
+    color: #ffffff;
+    transition: color 0.2s ease;
+}
+
+.news-card-title a:hover {
+    color: #ff2a74;
+}
+
+/* Дата та час */
+.news-card-meta {
+    color: #6c7284;
+    font-size: 0.8rem;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+/* Уривок тексту */
+.news-card-excerpt {
+    color: #9aa0b3;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    margin-bottom: 20px;
+    flex-grow: 1; /* Штовхає кнопку вниз, щоб картки були рівні */
+}
+
+/* Кнопка "Читати далі" */
+.news-card-button {
+    color: #ffffff;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.9rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: gap 0.2s ease;
+    align-self: flex-start;
+}
+
+.news-card-button:hover {
+    color: #ff2a74;
+    gap: 12px; /* Стрілка трохи відсувається при наведенні */
+}
+
+/* ==========================================================================
+   СТИЛІ ДЛЯ СУЧАСНОЇ ШАПКИ (HEADER)
+   ========================================================================== */
+
+.site-header {
+    background: rgba(22, 23, 29, 0.8); /* Напівпрозорий темний фон */
+    backdrop-filter: blur(12px); /* Ефект розмиття скла (Glassmorphism) */
+    -webkit-backdrop-filter: blur(12px);
+    position: sticky;
+    top: 0;
+    z-index: 9999;
+    border-bottom: 1px solid rgba(36, 38, 49, 0.7);
+}
+
+.header-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 18px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* Стиль логотипу */
+.site-logo a {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: #ffffff;
+    text-decoration: none;
+    letter-spacing: 1.5px;
+    transition: opacity 0.2s ease;
+}
+
+.site-logo a:hover {
+    opacity: 0.9;
+}
+
+.logo-accent {
+    color: #ff2a74; /* Наш фірмовий неоново-рожевий колір */
+    position: relative;
+}
+
+/* Індикатор системного статусу розробника */
+.system-status {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(255, 42, 116, 0.06);
+    border: 1px solid rgba(255, 42, 116, 0.2);
+    padding: 6px 14px;
+    border-radius: 30px;
+}
+
+/* Пульсуюча зелена/рожева точка (ефект живої автоматизації) */
+.status-pulse {
+    width: 8px;
+    height: 8px;
+    background-color: #00ff66; /* Зелений вогник роботи */
+    border-radius: 50%;
+    box-shadow: 0 0 8px #00ff66;
+    animation: pulseGlow 2s infinite;
+}
+
+.status-text {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #9aa0b3;
+    letter-spacing: 1px;
+}
+
+/* Анімація пульсації індикатора */
+@keyframes pulseGlow {
+    0% {
+        transform: scale(0.95);
+        box-shadow: 0 0 0 0 rgba(0, 255, 102, 0.7);
+    }
+    70% {
+        transform: scale(1);
+        box-shadow: 0 0 0 6px rgba(0, 255, 102, 0);
+    }
+    100% {
+        transform: scale(0.95);
+        box-shadow: 0 0 0 0 rgba(0, 255, 102, 0);
+    }
+}
+
+/* Неонова тонка лінія під шапкою */
+.header-glow-line {
+    height: 2px;
+    background: linear-gradient(90deg, #16171d 0%, #ff2a74 50%, #16171d 100%);
+    opacity: 0.6;
+}

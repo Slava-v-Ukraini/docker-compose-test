@@ -1,14 +1,22 @@
-.DS_Store
-Thumbs.db
-*.log
-*.sql
-*.zip
+# Ігноруємо всі стандартні теми WordPress
+wp-content/themes/twentytwentyfive/
+wp-content/themes/twentytwentyfour/
+wp-content/themes/twentytwentythree/
+wp-content/themes/twentytwentytwo/
+wp-content/themes/hello-elementor/
+wp-content/themes/index.php
 
-wp-content/plugins/akismet/
-wp-content/plugins/hello.php
-wp-content/themes/twentytwenty*
-
+# Ігноруємо плагіни, кеш та логи (на випадок, якщо щось лишилося)
+wp-content/plugins/
 wp-content/uploads/
+wp-content/cache/
+wp-content/wflogs/
+mysql_data/
+.env
 
-!wp-content/plugins/elementor/
-!wp-content/themes/hello-elementor/
+# ДОЗВОЛЯЄМО трекати строго нашу кастомну тему
+!wp-content/themes/m-corner-core/
+
+# Дозволяємо трекати файли конфігурації
+!docker-compose.yml
+!n8n-workflows/

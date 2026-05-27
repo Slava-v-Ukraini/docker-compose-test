@@ -1,6 +1,5 @@
-version: '3.8'
-
 services:
+  # --- БАЗА ДАНИХ (MariaDB) ---
   db:
     image: mariadb:10.11
     container_name: m-corner-db
@@ -14,26 +13,46 @@ services:
       - mariadb_data:/var/lib/mysql
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
 
+  # --- ВЕБ-СЕРВЕР WORDPRESS ---
   wordpress:
-    image: wordpress:6.4-php8.1-fpm-alpine
+    depends_on:
+      - db
+    image: wordpress:latest
     container_name: m-corner-wp
     restart: always
     ports:
       - "8080:80"
     environment:
-      WORDPRESS_DB_HOST: db:3306
+      WORDPRESS_DB_HOST: db
       WORDPRESS_DB_USER: m_corner_worker
       WORDPRESS_DB_PASSWORD: worker_secure_password
       WORDPRESS_DB_NAME: m_corner_db
     volumes:
       - ./wp-content:/var/www/html/wp-content
 
+  # --- ADMINER (Управління БД) ---
   adminer:
     image: adminer:latest
     container_name: m-corner-adminer
     restart: always
     ports:
-      - "8081:80"
+      - "8081:8080"
+
+  # --- АВТОМАТИЗАЦІЯ N8N ---
+  n8n:
+    image: docker.n8n.io/n8nio/n8n:latest
+    container_name: m-corner-n8n
+    restart: always
+    ports:
+      - "5678:5678"
+    environment:
+      - N8N_HOST=localhost
+      - N8N_PORT=5678
+      - N8N_PROTOCOL=http
+      - NODE_ENV=production
+    volumes:
+      - n8n_data:/home/node/.n8n
 
 volumes:
   mariadb_data:
+  n8n_data:

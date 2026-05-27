@@ -1,0 +1,315 @@
+{
+  "name": "AI posts",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyHour"
+            }
+          ]
+        },
+        "feedUrl": "https://itc.ua/ua/news/feed/"
+      },
+      "type": "n8n-nodes-base.rssFeedReadTrigger",
+      "typeVersion": 1,
+      "position": [
+        -160,
+        -192
+      ],
+      "id": "46e737a2-17ba-4db4-8ca7-91478d76f565",
+      "name": "RSS Feed Trigger",
+      "alwaysOutputData": false,
+      "executeOnce": false,
+      "retryOnFail": false
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.5-flash",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.5-flash"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=Зроби глибокий професійний рерайт новини українською мовою для технологічного порталу M-CORNER AI.\n\nОригінал для обробки:\nЗаголовок: {{ $json.title }}\nТекст: {{ $json.contentSnippet || $json.summary }}\n\nЗгенеруй три обов'язкові текстові поля:\n1. ai_title — новий клікабельний, але серйозний заголовок.\n2. ai_excerpt — короткий уривок (1-2 речення) для картки.\n3. ai_content — повний переписаний текст новини, розбитий на абзаци для зручного читання.\n\nТи працюєш у режимі JSON Mode, тому твоя відповідь повинна містити тільки об'єкт із цими трьома ключами. Не додавай жодних Markdown-обгорток, вступних слів чи символів екранування. Поверни чисті ключ-значення."
+            }
+          ]
+        },
+        "jsonOutput": true,
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1.2,
+      "position": [
+        624,
+        -48
+      ],
+      "id": "c7f80666-7407-4328-8179-50a43f13fde3",
+      "name": "Message a model",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000,
+      "credentials": {
+        "googlePalmApi": {
+          "id": "4vmUAegY6K0VdV7B",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://m-corner-wp/wp-json/wp/v2/posts",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBasicAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"title\": \"{{ $json.title }}\",\n  \"excerpt\": \"{{ $json.excerpt }}\",\n  \"content\": \"{{ $json.content }}\",\n  \"status\": \"publish\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1168,
+        0
+      ],
+      "id": "f3e71072-e115-49fa-83d5-2767f3e71ff8",
+      "name": "HTTP Request",
+      "credentials": {
+        "httpBasicAuth": {
+          "id": "2f8mS7YcIdcP1UfH",
+          "name": "Unnamed credential"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "// 1. Отримуємо рерайт від Gemini\nconst rawText = $input.item.json.content.parts[0].text;\nconst parsedData = JSON.parse(rawText);\n\n// 2. Звертаємося напряму до ноди Merge за HTML-кодом\nconst htmlContent = $('Merge').item.json.data || '';\nlet imageUrl = '';\n\nif (htmlContent) {\n    // Шукаємо метатег og:image\n    const match = htmlContent.match(/<meta[^>]*property=[\"']og:image[\"'][^>]*content=[\"']([^\"']+)[\"']/i) \n               || htmlContent.match(/<meta[^>]*content=[\"']([^\"']+)[\"'][^>]*property=[\"']og:image[\"']/i);\n    \n    if (match && match[1]) {\n        imageUrl = match[1];\n    }\n}\n\n// 3. Функція очищення тексту від сирих розривів рядків\nconst cleanString = (str) => {\n  if (!str) return '';\n  return str.replace(/\\n/g, \"\\\\n\").replace(/\\r/g, \"\\\\r\");\n};\n\n// 4. Формуємо контент. Використовуємо ОДИНАРНІ лапки всередині тегу <img>, щоб не ламати JSON\nlet finalContent = parsedData.ai_content;\nif (imageUrl) {\n    finalContent = `<img src='${imageUrl}' style='display:none;' />` + finalContent;\n}\n\nreturn {\n  json: {\n    title: parsedData.ai_title,\n    excerpt: cleanString(parsedData.ai_excerpt),\n    content: cleanString(finalContent)\n  }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        960,
+        0
+      ],
+      "id": "4b19c574-ca9a-4c35-8476-b44fd7b0b60c",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineAll",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        448,
+        -48
+      ],
+      "id": "147c5fce-81aa-42fe-9424-816ba197c848",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "url": "={{ $('RSS Feed Trigger').item.json.link }}",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "text"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        256,
+        96
+      ],
+      "id": "d21b7a90-f673-4d5e-8350-2d74add3c18a",
+      "name": "HTTP Request (Get Original Page)"
+    },
+    {
+      "parameters": {
+        "url": "=http://m-corner-wp/wp-json/wp/v2/posts",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBasicAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "search",
+              "value": "={{ $json.title }}"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "json"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        -160,
+        80
+      ],
+      "id": "2c01a747-4fad-4935-a48c-96562cfdf917",
+      "name": "WP Duplicate Check",
+      "alwaysOutputData": true,
+      "executeOnce": false,
+      "credentials": {
+        "httpBasicAuth": {
+          "id": "2f8mS7YcIdcP1UfH",
+          "name": "Unnamed credential"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "b5e4e21c-d523-470f-8402-30a64927863a",
+              "leftValue": "={{ $input.all().length }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "number",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        16,
+        80
+      ],
+      "id": "7e26fa53-c705-4165-8766-dfcfcfca8e25",
+      "name": "If",
+      "alwaysOutputData": false
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "RSS Feed Trigger": {
+      "main": [
+        [
+          {
+            "node": "WP Duplicate Check",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        []
+      ]
+    },
+    "HTTP Request (Get Original Page)": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "WP Duplicate Check": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request (Get Original Page)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "98eadcbc-b326-45df-a207-0cd63cade7e5",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "1caa9daa6fbeef92c0bdb5b36b187848121fde917ea4282141b769c8c91462ff"
+  },
+  "id": "jazMU84UGbigRLTS",
+  "tags": []
+}
